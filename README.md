@@ -47,6 +47,4 @@ Since this is time-series data, I utilized a **Walk-Forward Validation** (TimeSe
 ```text
 ├── data/               # Raw and cleaned CSV files
 ├── notebooks/          # EDA and Model Training (Jupyter)
-├── src/                # Python scripts for feature engineering
-├── models/             # Saved .pkl files for final models
 └── README.md           # Project documentation
