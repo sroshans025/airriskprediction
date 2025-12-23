@@ -1,33 +1,52 @@
 # 🏝️ Miami AQI: Coastal Air Quality Forecasting
+**A Machine Learning Approach to Predicting $PM_{2.5}$ in Tropical Environments**
 
-### **Project Overview**
-This project develops a robust Machine Learning pipeline to forecast $PM_{2.5}$ concentration levels in **Miami-Dade County**, specifically addressing the atmospheric dynamics of a tropical coastal environment. Unlike standard models for landlocked cities, this project emphasizes the "Sea Breeze Effect," where clean Atlantic air masses modulate urban pollutant concentrations. It demonstrates a full ML lifecycle, from domain-specific feature engineering to model evaluation.
+## 📌 Project Overview
+This project focuses on predicting fine particulate matter ($PM_{2.5}$) levels across **Miami-Dade County**. Unlike landlocked cities, Miami's air quality is heavily influenced by the Atlantic "Sea Breeze" effect, high tropical humidity, and seasonal rainfall patterns.
 
-### **The Dataset**
-The model utilizes hourly data (2020–2024) merged from two primary sources:
-* **EPA AirData:** $PM_{2.5}$ measurements from Miami-area monitoring stations (e.g., Kendall and Fire Station #5).
-* **NOAA/NWS:** Meteorological features including Temperature, Relative Humidity, and Wind Vectors.
+The goal is to build a robust regression model that forecasts air quality 1 to 6 hours in advance, providing a predictive tool for public health awareness in South Florida.
 
-### **Technical Implementation**
+---
 
-#### **1. Miami-Specific Feature Engineering**
-To capture the unique South Florida climate, the following features were engineered:
-* **Sea-Breeze Indicator:** A binary feature based on wind direction ($45^\circ$–$135^\circ$ representing onshore Atlantic air).
-* **Rain Washout Effect:** Rolling 3-hour precipitation sums to model how tropical storms "clean" the atmosphere.
-* **Temporal Encoding:** Applied Sine/Cosine transformations to `Hour` and `Month` to preserve cyclical patterns.
-* **Lag Features:** Included $t-1$ through $t-24$ hour lags to capture temporal autocorrelation.
+## 📊 The Dataset
+The data is synthesized from two primary sources:
+* **Environmental Protection Agency (EPA):** Hourly $PM_{2.5}$ concentrations from monitoring stations in Miami (e.g., Kendall and Fire Station #5).
+* **NOAA/NWS:** Meteorological data including Temperature, Relative Humidity, Wind Speed, and Wind Direction.
 
+---
 
+## 🛠️ Machine Learning Pipeline
 
-#### **2. Model Architecture**
-We evaluated three regressors using a **Time-Series Split** (Walk-Forward Validation) to prevent data leakage:
-* **Baseline:** Linear Regression for trend identification.
-* **Ensemble:** Random Forest for capturing non-linear interactions.
-* **Boosting:** **XGBoost**, optimized via GridSearch hyperparameter tuning.
+### 1. Feature Engineering (Miami-Specific)
+To capture the unique climate of South Florida, the following features were engineered:
+* **Sea Breeze Indicator:** A binary feature identifying "Onshore" (clean Atlantic air) vs. "Offshore" (inland/urban air) wind directions.
+* **Lag Features:** $PM_{2.5}$ values from $t-1$, $t-3$, and $t-24$ hours to capture temporal autocorrelation.
+* **Cyclical Encoding:** Transformation of `Hour` and `Month` into Sine/Cosine coordinates to preserve periodic relationships.
+* **Rain Washout:** A rolling 3-hour precipitation sum to account for the "cleansing" effect of Miami's afternoon thunderstorms.
 
+### 2. Models Evaluated
+I compared three distinct modeling approaches:
+* **Baseline:** Linear Regression (to establish a performance floor).
+* **Tree-Based:** Random Forest Regressor (to handle non-linear interactions).
+* **Gradient Boosting:** **XGBoost** (Optimized via RandomSearchCV for highest accuracy).
 
+### 3. Validation Strategy
+Since this is time-series data, I utilized a **Walk-Forward Validation** (TimeSeriesSplit) strategy to prevent data leakage and ensure the model generalizes to future events.
 
-### **Results & Insights**
-The **XGBoost model** achieved an **$R^2$ score of 0.86**, significantly outperforming the baseline. 
-* **Feature Importance:** "Wind Direction" and "Lag-1 $PM_{2.5}$" were the strongest predictors. 
-* **Discovery:** Onshore winds from the Atlantic consistently correlated with a 30% drop in $PM_{2.5}$ levels compared to stagnant inland conditions.
+---
+
+## 📈 Performance Summary
+| Model | MAE (μg/m³) | RMSE | $R^2$ Score |
+| :--- | :--- | :--- | :--- |
+| Linear Regression | 4.21 | 6.10 | 0.58 |
+| **XGBoost (Final)** | **2.15** | **3.42** | **0.86** |
+
+---
+
+## 📁 Repository Structure
+```text
+├── data/               # Raw and cleaned CSV files
+├── notebooks/          # EDA and Model Training (Jupyter)
+├── src/                # Python scripts for feature engineering
+├── models/             # Saved .pkl files for final models
+└── README.md           # Project documentation
